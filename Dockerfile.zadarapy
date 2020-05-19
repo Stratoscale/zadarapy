@@ -1,0 +1,6 @@
+FROM rackattack-nas.dc1:5000/dev-base:a28601e371630f1bc4d6bfeee2db1efd5f99a1de
+
+COPY requirements.txt /tmp/
+RUN pip install -r /tmp/requirements.txt
+COPY dist/zadarapy-*.tar.gz /tmp/dist/
+RUN pip install /tmp/dist/*.tar.gz

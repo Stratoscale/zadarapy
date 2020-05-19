@@ -1,0 +1,7 @@
+version: 2
+
+services:
+    zadarapy:
+        containerized: false
+        pips:
+            - dist/zadarapy*.tar.gz

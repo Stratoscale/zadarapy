@@ -1,0 +1,4 @@
+FROM rackattack-nas.dc1:5000/staging/dev-base:93c62b5d9d80dd483dc773ab5e841aa190a887b4
+COPY dev-requirements.txt /tmp/
+RUN pip install -r /tmp/dev-requirements.txt
+
