@@ -14,6 +14,7 @@
 # under the License.
 # from urllib.parse import urlencode
 
+from urllib import urlencode
 import requests
 from future.standard_library import install_aliases
 
