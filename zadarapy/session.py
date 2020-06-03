@@ -580,7 +580,7 @@ class Session(object):
                                            data=body, headers=headers,
                                            timeout=session_timeout,
                                            verify=True)
-        except requests.exceptions.RequestException:
+        except requests.exceptions.RequestException as e:
             raise OSError('Could not connect to {0} on port {1} via {2}'.
                           format(host, port, protocol))
         except BaseException as e:

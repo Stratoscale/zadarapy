@@ -933,6 +933,8 @@ def verify_email(email):
         raise ValueError('{0} is not a valid email address.'
                          .format(email))
 
+    return email
+
 
 def verify_volume_av_parameters(enable_on_demand_scan, file_types_to_scan,
                                 exclude_file_types, include_file_types, exclude_path):
