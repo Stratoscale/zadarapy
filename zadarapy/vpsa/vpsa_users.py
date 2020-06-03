@@ -264,7 +264,7 @@ def change_vpsa_user_password_by_code(session, username, code, new_password,
     username = quote(username)
     new_password = verify_field(new_password, "new_password", allow_quote=True)
 
-    body_values = {'code': code, 'new_password': new_password}
+    body_values = {'user': username, 'code': code, 'new_password': new_password}
 
     path = '/api/users/{0}/password_code.json'.format(username)
 
