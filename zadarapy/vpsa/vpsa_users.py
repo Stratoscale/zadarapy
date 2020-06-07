@@ -363,3 +363,36 @@ def disable_cloud_admin_access(session, confirm, return_type=None, **kwargs):
     path = '/api/users/admin_access/disable.json'
 
     return session.post_api(path=path, return_type=return_type, **kwargs)
+
+
+def set_admin_role(session, username, is_admin, return_type=None, **kwargs):
+    """
+    Sets VPSA user's admin role.
+    Only a VPSA admin may perform this action.
+
+    :type session: zadarapy.session.Session
+    :param session: A valid zadarapy.session.Session object.  Required.
+
+    :type username: str
+    :param username: The VPSA user's username.  Required.
+
+    :type is_admin: bool
+    :param is_admin: Is username should be admin or not.  Required.
+
+    :type return_type: str
+    :param return_type: If this is set to the string 'json', this function
+        will return a JSON string.  Otherwise, it will return a Python
+        dictionary.  Optional (will return a Python dictionary by default).
+
+    :rtype: dict, str
+    :returns: A dictionary or JSON data set as a string depending on
+        return_type parameter.
+    """
+    username = verify_field(username, "username")
+    username_for_path = quote(username)
+
+    path = '/api/users/{0}/roles.json'.format(username_for_path)
+    body = {'admin': "1" if is_admin else "0"}
+
+    return session.post_api(path=path, body=body,
+                            return_type=return_type, **kwargs)
