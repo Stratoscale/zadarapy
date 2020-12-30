@@ -45,9 +45,10 @@ class Session(object):
     zadara_port = None
     zadara_key = None
     zadara_secure = None
+    zadara_verify_ssl = None
 
     def __init__(self, host=None, port=None, key=None, configfile=None,
-                 secure=True, default_timeout=None, log_function=None):
+                 secure=True, default_timeout=None, log_function=None, verify_ssl=True):
         """
         Configuration details for working with the API will be gathered from
         the following, in order or preference:
@@ -86,6 +87,9 @@ class Session(object):
         :type log_function: function
         :param log_function: Function variable to a log function to print the
                 API command Session sends. Default=None, means no print
+
+        :type verify_ssl: bool
+        :param verify_ssl: Verify the SSL certificate  Optional.
         """
         self._log_function = log_function
         self._default_timeout = default_timeout or DEFAULT_TIMEOUT
@@ -153,8 +157,22 @@ class Session(object):
                         false_values:
                     self.zadara_secure = False
 
+        if verify_ssl is False:
+            self.zadara_verify_ssl = False
+        elif os.getenv('ZADARA_VERIFY_SSL') is not None:
+            if os.getenv('ZADARA_VERIFY_SSL').lower() in false_values:
+                self.zadara_verify_ssl = False
+        elif self._config is not None:
+            if self._config.defaults().get('verify_ssl', None) is not None:
+                if self._config.defaults().get('verify_ssl').lower() in \
+                        false_values:
+                    self.zadara_verify_ssl = False
+
         if self.zadara_secure is None:
             self.zadara_secure = True
+
+        if self.zadara_verify_ssl is None:
+            self.zadara_verify_ssl = True
 
     def head_api(self, path, host=None, port=None, key=None,
                 secure=None, body=None, parameters=None, timeout=None,
@@ -465,7 +483,7 @@ class Session(object):
 
     def call_api(self, method, path, host=None, port=None, key=None,
                  secure=None, additional_headers=None, body=None, parameters=None,
-                 timeout=None, return_type=None, use_port=True, return_header=False):
+                 timeout=None, return_type=None, use_port=True, return_header=False, verify_ssl=False):
         """
         Makes the actual REST call to the Zadara API endpoint.  If host, key,
         and/or secure are set as None, the instance variables will be used as
@@ -531,6 +549,9 @@ class Session(object):
         :param return_header: If True the return content will be the header
         and not the content of the response.  Optional.
 
+        :type verify_ssl: bool
+        :param verify_ssl: Verify the SSL certificate  Optional.
+
         :rtype: dict, str
         :returns: A dictionary or JSON data set as a string depending on
             return_type parameter.
@@ -547,6 +568,7 @@ class Session(object):
         port = port or self.zadara_port
         key = key or self.zadara_key
         secure = secure or self.zadara_secure
+        verify_ssl = verify_ssl or self.zadara_verify_ssl
         path = path if path.startswith("/") else "/{}".format(path)
         session_port, protocol = DICT_SECURED_DETAILS[secure]
 
@@ -579,7 +601,7 @@ class Session(object):
                                            params=parameters,
                                            data=body, headers=headers,
                                            timeout=session_timeout,
-                                           verify=True)
+                                           verify=verify_ssl)
         except requests.exceptions.RequestException as e:
             raise OSError('Could not connect to {0} on port {1} via {2}'.
                           format(host, port, protocol))
